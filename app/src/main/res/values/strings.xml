@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BasicBrowser</string>
+    <string name="invalid_url">Enter a valid HTTP or HTTPS URL</string>
 </resources>

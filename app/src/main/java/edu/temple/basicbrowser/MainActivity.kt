@@ -1,6 +1,7 @@
 package edu.temple.basicbrowser
 
 import androidx.appcompat.app.AppCompatActivity
+import android.net.Uri
 import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -28,5 +29,33 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        goButton.setOnClickListener {
+            val url = normalizeUrl(urlEditText.text.toString())
+            if (url == null) {
+                urlEditText.error = getString(R.string.invalid_url)
+            } else {
+                urlEditText.error = null
+                urlEditText.setText(url)
+                webView.loadUrl(url)
+            }
+        }
+    }
+
+    private fun normalizeUrl(input: String): String? {
+        val trimmed = input.trim()
+        if (trimmed.isEmpty()) return null
+
+        val url = when {
+            trimmed.startsWith("//") -> "https:$trimmed"
+            trimmed.contains("://") -> trimmed
+            else -> "https://$trimmed"
+        }
+        val uri = Uri.parse(url)
+        return url.takeIf {
+            (uri.scheme.equals("http", ignoreCase = true)
+                    || uri.scheme.equals("https", ignoreCase = true))
+                    && !uri.host.isNullOrBlank()
+                    && url.none { it.isWhitespace() }
+        }
     }
 }
